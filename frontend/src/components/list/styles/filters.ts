@@ -25,6 +25,10 @@ interface filterStyles {
   dropdownWrapper: CSSProperties,
   dropdownButton: CSSProperties,
 
+  sortBox: CSSProperties,
+  sortSelect: CSSProperties,
+  sortOption: CSSProperties,
+
   modalSearch: CSSProperties,
   modalSearchBox: CSSProperties,
   modalSearchInput: CSSProperties,
@@ -51,17 +55,19 @@ export default function filtersGetStyle(isDarkmode: boolean): filterStyles {
   return {
     container: {
       width: "100%",
+      maxWidth: "1000px",
       display: "flex",
       flexDirection: "column",
-      gap: "1.5rem",
+      gap: "1rem",
       background: baseBg,
       color: baseText,
-      padding: "1.5rem",
-      borderTopLeftRadius: "20px",
-      borderTopRightRadius: "20px",
+      padding: "2rem",
+      borderRadius: "12px",
       boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
       fontFamily: "'Inter','Segoe UI',sans-serif",
+      boxSizing: "border-box",
     },
+
     searchBox: {
       display: "flex",
       flexDirection: "row",
@@ -98,6 +104,7 @@ export default function filtersGetStyle(isDarkmode: boolean): filterStyles {
     },
     params: {
       display: "flex",
+      justifyContent: 'space-between',
       flexWrap: "wrap",
       gap: "2rem",
     },
@@ -126,6 +133,8 @@ export default function filtersGetStyle(isDarkmode: boolean): filterStyles {
     buttonBox: {
       display: "flex",
       justifyContent: "flex-end",
+      alignSelf: 'flex-end',
+      alignItems: 'flex-end'
     },
     resetButton: {
       padding: "0.5rem 1rem",
@@ -245,6 +254,7 @@ export default function filtersGetStyle(isDarkmode: boolean): filterStyles {
       opacity: 0,
       pointerEvents: "none",
       transition: "opacity 0.35s ease",
+      fontFamily: "'Inter','Segoe UI',sans-serif",
     },
     modalSearchBox: {
       background: baseBg,
@@ -260,6 +270,7 @@ export default function filtersGetStyle(isDarkmode: boolean): filterStyles {
     },
     modalSearchInput: {
       width: "100%",
+      boxSizing: "border-box",
       padding: "0.85rem 1rem",
       borderRadius: "10px",
       border: `1px solid ${borderColor}`,
@@ -269,11 +280,32 @@ export default function filtersGetStyle(isDarkmode: boolean): filterStyles {
       outline: "none",
       transition: "border-color 0.25s ease, box-shadow 0.25s ease",
     },
+
     modalText: {
       fontSize: "1.1rem",
       fontWeight: 600,
       color: baseText,
       textAlign: "center",
+    },
+    sortBox: {
+      display: "flex",
+      gap: "1rem",
+      justifyContent: "space-between",
+    },
+    sortSelect: {
+      padding: "0.4rem 0.6rem",
+      border: `1px solid ${borderColor}`,
+      borderRadius: "6px",
+      background: baseBg,
+      color: baseText,
+      fontSize: "0.9rem",
+      cursor: "pointer",
+      transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+    },
+    sortOption: {
+      background: baseBg,
+      color: baseText,
+      fontSize: "0.9rem",
     },
   };
 }

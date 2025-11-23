@@ -11,11 +11,12 @@ interface LoadAdsParams {
   minPrice?: number;
   maxPrice?: number;
   search?: string;
+  currentPage?: number;
 }
 
 export default async function loadAds(params: LoadAdsParams) {
   const query: any = {
-    page: 1, // Всегда возвращать на первую страницу, чтобы не получать 400
+    page: params.currentPage ?? 1,
     limit: 10,
     sortBy: params.sortBy ?? "createdAt",
     sortOrder: params.sortOrder ?? "asc",
@@ -31,6 +32,4 @@ export default async function loadAds(params: LoadAdsParams) {
   // Нельзя воспользоваться абстракциями, реакт плачет
   store.dispatch(setPagination(response.pagination));
   store.dispatch(replaceAds(response.ads));
-
-  console.log(response);
 }

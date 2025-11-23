@@ -10,11 +10,16 @@ import loadAds from "./actions/loadAds.ts";
 export default function List() {
   const [isDarkmode] = useDarkmode();
 
-  useEffect(() => {
+  useEffect(() => { //Перекрасить рут под цвет цветовой схемы
     const root = document.getElementById("root");
+    const body = document.getElementById('body')
     if (root) {
       root.style.backgroundColor = isDarkmode ? "#121212" : "#ffffff";
       root.style.transition = "background-color 0.3s ease";
+    }
+    if (body) {
+      body.style.backgroundColor = isDarkmode ? "#121212" : "#ffffff";
+      body.style.transition = "background-color 0.3s ease";
     }
   }, [isDarkmode]);
 
