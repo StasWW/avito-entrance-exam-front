@@ -2,6 +2,7 @@ import React, {useMemo} from "react";
 import type {Ad} from "../../serverCalls/ads.ts";
 import getAdStyles from "./styles/ad.ts";
 import {useDarkmode} from "../../store/storage.ts";
+import {useNavigate} from "react-router-dom";
 
 export default function AdComponent(props: Ad) {
 
@@ -51,7 +52,12 @@ export default function AdComponent(props: Ad) {
   };
 
   const [isDarkmode] = useDarkmode();
-  const styles = useMemo(() => getAdStyles(isDarkmode), [isDarkmode])
+  const styles = useMemo(() => getAdStyles(isDarkmode), [isDarkmode]);
+  const navigate = useNavigate();
+
+  const redirectToItemPage = () => {
+    navigate(`/item/${props.id}`);
+  }
 
   return (
     <div style={styles.card}>
@@ -69,7 +75,10 @@ export default function AdComponent(props: Ad) {
             <span>{props.category}</span> &middot; <span>{timeToText(props.createdAt)}</span>
           </p>
         </div>
-        <button style={styles.button}>Открыть</button>
+        <button
+          style={styles.button}
+          onClick={redirectToItemPage}
+        >Открыть</button>
       </div>
     </div>
   )

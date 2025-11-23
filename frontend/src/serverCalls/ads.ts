@@ -78,3 +78,10 @@ export async function getAds(params: GetAdsParams): Promise<GetAdsResponse> {
   if (!res.ok) throw res.status.toString();
   return await res.json() as GetAdsResponse;
 }
+
+export async function getAdById(id: string): Promise<Ad> {
+  const res = await fetch(`http://localhost:3001/api/v1/ads/${id}`,
+    { headers: { Accept: "application/json" } });
+  if (!res.ok) throw res.status.toString();
+  return await res.json() as Ad;
+}
