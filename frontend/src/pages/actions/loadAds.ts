@@ -1,4 +1,7 @@
-import {getAds} from "../../serverCalls/ads.ts";
+import { getAds } from "../../serverCalls/ads.ts";
+import { store } from "../../store/storage.ts";
+import { replaceAds } from "../../store/adsSlice.ts";
+import { setPagination } from "../../store/paginationSlice.ts";
 
 interface LoadAdsParams {
   sortBy?: "createdAt" | "price" | "priority";
@@ -12,7 +15,7 @@ interface LoadAdsParams {
 
 export default async function loadAds(params: LoadAdsParams) {
   const query: any = {
-    page: 1,
+    page: 1, // Всегда возвращать на первую страницу, чтобы не получать 400
     limit: 10,
     sortBy: params.sortBy ?? "createdAt",
     sortOrder: params.sortOrder ?? "asc",
@@ -23,6 +26,11 @@ export default async function loadAds(params: LoadAdsParams) {
     ...(params.search ? { search: params.search } : {}),
   };
 
-  const ads = await getAds(query);
-  console.log(ads);
+  const response = await getAds(query);
+
+  // Нельзя воспользоваться абстракциями, реакт плачет
+  store.dispatch(setPagination(response.pagination));
+  store.dispatch(replaceAds(response.ads));
+
+  console.log(response);
 }

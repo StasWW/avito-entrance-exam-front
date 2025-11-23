@@ -1,9 +1,9 @@
 import React from "react";
 
-export default function Ads () {
+export default function Ad() {
   return (
     <div>
-      <h1>Ads</h1>
+      <p>Single Ad</p>
     </div>
   )
 }

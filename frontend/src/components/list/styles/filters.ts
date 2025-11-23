@@ -39,14 +39,14 @@ export default function filtersGetStyle(isDarkmode: boolean): filterStyles {
     darkText: "#f5f5f5",
     accent: "#4a90e2",
     accentHover: "#357ABD",
-    border: "#d0d0d5",
-    borderDark: "#333",
+    borderLight: "#d0d0d5",
+    borderDark: "#444",
     danger: "#e74c3c",
-  }
+  };
 
-  const baseBg = isDarkmode ? colors.darkBg : colors.lightBg
-  const baseText = isDarkmode ? colors.darkText : colors.lightText
-  const borderColor = isDarkmode ? colors.borderDark : colors.border
+  const baseBg = isDarkmode ? colors.darkBg : colors.lightBg;
+  const baseText = isDarkmode ? colors.darkText : colors.lightText;
+  const borderColor = isDarkmode ? colors.borderDark : colors.borderLight;
 
   return {
     container: {
@@ -94,13 +94,12 @@ export default function filtersGetStyle(isDarkmode: boolean): filterStyles {
     searchIcon: {
       aspectRatio: "1/1",
       height: "60%",
-      filter: "invert(1)",
+      filter: isDarkmode ? "invert(1)" : "none",
     },
     params: {
       display: "flex",
-      flexDirection: "row",
-      gap: "2rem",
       flexWrap: "wrap",
+      gap: "2rem",
     },
     paramGroup: {
       display: "flex",
@@ -121,9 +120,8 @@ export default function filtersGetStyle(isDarkmode: boolean): filterStyles {
     checkbox: {
       width: "18px",
       height: "18px",
-      borderRadius: "0",
       accentColor: colors.accent,
-      marginRight: "0.5rem",
+      cursor: "pointer",
     },
     buttonBox: {
       display: "flex",
@@ -146,31 +144,31 @@ export default function filtersGetStyle(isDarkmode: boolean): filterStyles {
     pill: {
       padding: "0.4rem 0.8rem",
       borderRadius: "999px",
-      border: "1px solid #ccc",
-      background: "#f0f0f0",
+      border: `1px solid ${borderColor}`,
+      background: isDarkmode ? "#333" : "#f0f0f0",
+      color: baseText,
       cursor: "pointer",
       fontSize: "0.9rem",
       userSelect: "none",
+      transition: "background 0.2s ease, color 0.2s ease",
     },
     priceBox: {
       display: "flex",
       flexDirection: "column",
-      justifyContent: "space-between",
       gap: "0.5rem",
       minWidth: "120px",
     },
     priceGroup: {
       display: "flex",
-      flexDirection: "row",
       gap: "0.5rem",
     },
     priceInput: {
       width: "70px",
       padding: "0.3rem 0.5rem",
-      border: "1px solid #ccc",
+      border: `1px solid ${borderColor}`,
       borderRadius: "6px",
       background: isDarkmode ? "#2a2a33" : "#fff",
-      color: isDarkmode ? "#f5f5f5" : "#2d2d2d",
+      color: baseText,
       fontSize: "0.85rem",
       textAlign: "center",
       transition: "border-color 0.2s ease, box-shadow 0.2s ease",
@@ -202,7 +200,7 @@ export default function filtersGetStyle(isDarkmode: boolean): filterStyles {
       padding: "0.4rem 0.6rem",
       border: `1px solid ${borderColor}`,
       borderRadius: "6px",
-      width: '100%',
+      width: "100%",
       background: isDarkmode ? "#2a2a33" : "#fff",
       color: baseText,
       fontSize: "0.9rem",
@@ -225,15 +223,13 @@ export default function filtersGetStyle(isDarkmode: boolean): filterStyles {
       overflow: "hidden",
       transition: "max-height 0.3s ease",
       zIndex: 5,
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "flex-start",
     },
     dropdownItem: {
       padding: "0.25rem 0.5rem",
       cursor: "pointer",
       width: "100%",
       textAlign: "left",
+      transition: "background 0.2s ease",
     },
     modalSearch: {
       position: "fixed",
@@ -241,7 +237,7 @@ export default function filtersGetStyle(isDarkmode: boolean): filterStyles {
       left: 0,
       width: "100%",
       height: "100%",
-      background: "rgba(0,0,0,0.5)",
+      background: isDarkmode ? "rgba(0,0,0,0.7)" : "rgba(0,0,0,0.5)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -250,44 +246,34 @@ export default function filtersGetStyle(isDarkmode: boolean): filterStyles {
       pointerEvents: "none",
       transition: "opacity 0.35s ease",
     },
-
     modalSearchBox: {
-      background: isDarkmode ? "#1c1c24" : "#fff",
+      background: baseBg,
       padding: "2rem",
       borderRadius: "16px",
       boxShadow: "0 12px 32px rgba(0,0,0,0.35)",
       display: "flex",
       flexDirection: "column",
-      alignItems: "stretch",
       gap: "1.25rem",
       width: "90%",
       maxWidth: "700px",
-      boxSizing: "border-box",
-      transform: "scale(0.2) translateY(-100px)",
       transition: "transform 0.35s ease, opacity 0.35s ease",
     },
-
     modalSearchInput: {
       width: "100%",
-      maxWidth: "100%",
       padding: "0.85rem 1rem",
       borderRadius: "10px",
-      border: `1px solid ${isDarkmode ? "#444" : "#ccc"}`,
+      border: `1px solid ${borderColor}`,
       background: isDarkmode ? "#2a2a33" : "#f9f9fb",
-      color: isDarkmode ? "#f5f5f5" : "#2d2d2d",
+      color: baseText,
       fontSize: "1rem",
       outline: "none",
-      boxSizing: "border-box",
       transition: "border-color 0.25s ease, box-shadow 0.25s ease",
     },
-
     modalText: {
       fontSize: "1.1rem",
       fontWeight: 600,
-      color: isDarkmode ? "#f5f5f5" : "#2d2d2d",
+      color: baseText,
       textAlign: "center",
-    }
-
-
-  }
+    },
+  };
 }

@@ -7,7 +7,7 @@ import loadAds from "../../pages/actions/loadAds.ts";
 type categoryType = "Электроника" | "Недвижимость" | "Транспорт" | "Работа" | "Услуги" | "Животные" | "Мода" | "Детское"
 
 export default function Filters() {
-  const isDarkmode = useDarkmode();
+  const [isDarkmode] = useDarkmode();
   const styles = useMemo(() => filtersGetStyle(isDarkmode), [isDarkmode]);
 
   const [openCategory, setOpenCategory] = useState(false);
@@ -104,7 +104,7 @@ export default function Filters() {
   }
 
   return (
-    <header style={styles.container}>
+    <div style={styles.container}>
       <div style={styles.searchBox} role="search" onSubmit={e => e.preventDefault()}>
         <input style={styles.input} value={searchQuery} onChange={handleChangeSearchQuery} type="search" placeholder="Введите название" />
         <button style={styles.searchButton} onClick={handleSearch} type="submit">
@@ -233,6 +233,6 @@ export default function Filters() {
           />
         </div>
       </div>
-    </header>
+    </div>
   );
 }
