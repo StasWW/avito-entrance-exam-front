@@ -8,10 +8,12 @@ import {setCurrentPage} from "../../store/paginationSlice.ts";
 type categoryType = "Электроника" | "Недвижимость" | "Транспорт" | "Работа" | "Услуги" | "Животные" | "Мода" | "Детское"
 type statusType = "approved" | "rejected" | "requestChanges" | "";
 
+
 export default function Filters() {
   const [isDarkmode] = useDarkmode();
   const styles = useMemo(() => filtersGetStyle(isDarkmode), [isDarkmode]);
   const {pagination} = usePagination()
+
 
   const [openCategory, setOpenCategory] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -25,8 +27,6 @@ export default function Filters() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<"createdAt" | "price" | "priority">("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-
-
 
   const categories = [
     "Электроника",
@@ -104,11 +104,13 @@ export default function Filters() {
   };
 
   const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault()
     const value = e.target.value;
     setMinPrice(value === "" ? undefined : Number(value));
   };
 
   const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault()
     const value = e.target.value;
     setMaxPrice(value === "" ? undefined : Number(value));
   };
@@ -117,7 +119,6 @@ export default function Filters() {
     const value = e.target.value;
     setSearchQuery(value);
   }
-
 
   return (
     <>

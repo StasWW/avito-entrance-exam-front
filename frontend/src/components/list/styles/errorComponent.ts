@@ -4,12 +4,14 @@ interface AdsPlaceholderStyles {
   errorTitle: CSSProperties;
   errorSubTitle: CSSProperties;
   errorImg: CSSProperties,
+  button: CSSProperties,
 }
 
-export default function getAdsPlaceholderStyles(isDarkmode: boolean): AdsPlaceholderStyles {
+export default function geErrorComponentStyles(isDarkmode: boolean): AdsPlaceholderStyles {
   const colors = {
     title: isDarkmode ? "#ff6b6b" : "#d32f2f",
     subTitle: isDarkmode ? "#aaa" : "#555",
+    accent: isDarkmode ? "#2b5c86" : "#1976d2",
   };
 
   return {
@@ -36,6 +38,21 @@ export default function getAdsPlaceholderStyles(isDarkmode: boolean): AdsPlaceho
       margin: '20px auto',
       width: 200,
       height: 'auto',
-    }
+    },
+    button: {
+      margin: '20px auto',
+      height: '3rem',
+      width: '10rem',
+      fontSize: 24,
+      fontWeight: 700,
+      padding: "6px 12px",
+      borderRadius: "4px",
+      border: "none",
+      backgroundColor: colors.accent,
+      color: "#fff",
+      cursor: "pointer",
+      transition: "background-color 0.3s ease",
+      alignSelf: "flex-start",
+    },
   };
 }

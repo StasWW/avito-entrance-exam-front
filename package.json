@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "npm-run-all --parallel dev:frontend dev:backend",
     "dev:frontend": "npm run dev --prefix frontend",
-    "dev:backend": "npm start --prefix backend/tech-int3-server"
+    "dev:backend": "npm start --prefix backend/tech-int3-server",
+    "test": "cd frontend && npm run test"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"

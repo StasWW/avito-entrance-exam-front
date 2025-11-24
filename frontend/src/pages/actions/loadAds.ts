@@ -26,10 +26,23 @@ export default async function loadAds(params: LoadAdsParams) {
     ...(params.maxPrice !== undefined ? { maxPrice: params.maxPrice } : {}),
     ...(params.search ? { search: params.search } : {}),
   };
-
   const response = await getAds(query);
 
-  // Нельзя воспользоваться абстракциями, реакт плачет
-  store.dispatch(setPagination(response.pagination));
-  store.dispatch(replaceAds(response.ads));
+  const currentAds = store.getState().ads.ads;
+  const currentPagination = store.getState().pagination;
+
+  const adsChanged =
+    currentAds.length !== response.ads.length ||
+    currentAds.some((ad, idx) => ad.id !== response.ads[idx].id);
+
+  const paginationChanged =
+    currentPagination.totalPages !== response.pagination.totalPages ||
+    currentPagination.totalItems !== response.pagination.totalItems
+
+  if (adsChanged) {
+    store.dispatch(replaceAds(response.ads));
+  }
+  if (paginationChanged) {
+    store.dispatch(setPagination(response.pagination));
+  }
 }

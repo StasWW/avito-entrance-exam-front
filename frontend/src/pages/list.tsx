@@ -9,7 +9,6 @@ import loadAds from "./actions/loadAds.ts";
 
 export default function List() {
   const [isDarkmode] = useDarkmode();
-
   useEffect(() => { //Перекрасить рут под цвет цветовой схемы
     const root = document.getElementById("root");
     const body = document.getElementById('body')
@@ -31,9 +30,9 @@ export default function List() {
   return (
     <div id='app' style={style.container}>
       <Header />
-      <Filters />
+      <Filters/>
       <AdsPlaceholder />
-      <Footer />
+      <Footer/>
     </div>
   )
 }

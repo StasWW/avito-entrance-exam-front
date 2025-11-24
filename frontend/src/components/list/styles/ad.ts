@@ -10,6 +10,8 @@ interface AdStyles {
   price: CSSProperties;
   meta: CSSProperties;
   button: CSSProperties;
+  labelBox: CSSProperties;
+  status: CSSProperties;
 }
 
 export default function getAdStyles(isDarkmode: boolean): AdStyles {
@@ -94,6 +96,18 @@ export default function getAdStyles(isDarkmode: boolean): AdStyles {
       fontSize: "14px",
       transition: "background-color 0.3s ease",
       alignSelf: "flex-start",
+    },
+    labelBox: {
+      display: "flex",
+      gap: "0.75rem",
+      alignItems: "center",
+    },
+    status: {
+      borderRadius: "100px",
+      backgroundColor: isDarkmode ? "#2a2a33" : "#eee",
+      fontWeight: 600,
+      width: 20,
+      height: 20
     },
   };
 }

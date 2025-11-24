@@ -85,3 +85,36 @@ export async function getAdById(id: string): Promise<Ad> {
   if (!res.ok) throw res.status.toString();
   return await res.json() as Ad;
 }
+
+export async function approveById(id: string): Promise<Ad> {
+  const res = await fetch(`http://localhost:3001/api/v1/ads/${id}/approve`,
+    { headers: { Accept: "application/json" } });
+  if (!res.ok) throw res.status.toString();
+  return await res.json() as Ad;
+}
+export async function rejectById(id: string, reason: string, comment?: string): Promise<Ad> {
+  const res = await fetch(`http://localhost:3001/api/v1/ads/${id}/reject`,
+    {
+      headers: { Accept: "application/json" },
+      body: JSON.stringify({
+        reason,
+        comment: comment ?? '',
+      })
+    },
+
+    );
+  if (!res.ok) throw res.status.toString();
+  return await res.json() as Ad;
+}
+export async function requestChangesById(id: string, reason: string, comment?: string): Promise<Ad> {
+  const res = await fetch(`http://localhost:3001/api/v1/ads/${id}/request-changes`,
+    {
+      headers: { Accept: "application/json" },
+      body: JSON.stringify({
+        reason,
+        comment: comment ?? '',
+      })
+    });
+  if (!res.ok) throw res.status.toString();
+  return await res.json() as Ad;
+}
