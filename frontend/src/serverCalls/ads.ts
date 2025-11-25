@@ -59,6 +59,11 @@ interface GetAdsResponse {
   }
 }
 
+interface moderationAction {
+  ad: Ad,
+  message: string,
+}
+
 export async function getAds(params: GetAdsParams): Promise<GetAdsResponse> {
   const query = new URLSearchParams();
 
@@ -86,16 +91,35 @@ export async function getAdById(id: string): Promise<Ad> {
   return await res.json() as Ad;
 }
 
-export async function approveById(id: string): Promise<Ad> {
+export async function approveById(id: string): Promise<moderationAction> {
   const res = await fetch(`http://localhost:3001/api/v1/ads/${id}/approve`,
-    { headers: { Accept: "application/json" } });
+    {
+      method: 'POST',
+      headers: {
+        Accept: "application/json",
+        'Content-Type': "application/json",
+      },
+      body: '',
+    });
   if (!res.ok) throw res.status.toString();
-  return await res.json() as Ad;
+  return await res.json() as moderationAction;
 }
-export async function rejectById(id: string, reason: string, comment?: string): Promise<Ad> {
+// curl -X 'POST' \
+//   'http://localhost:3001/api/v1/ads/123/reject' \
+//   -H 'accept: application/json' \
+//   -H 'Content-Type: application/json' \
+//   -d '{
+//   "reason": "Запрещенный товар",
+//   "comment": ""
+// }'
+export async function rejectById(id: string, reason: string, comment?: string): Promise<moderationAction> {
   const res = await fetch(`http://localhost:3001/api/v1/ads/${id}/reject`,
     {
-      headers: { Accept: "application/json" },
+      method: 'POST',
+      headers: {
+        Accept: "application/json",
+        'Content-Type': "application/json",
+      },
       body: JSON.stringify({
         reason,
         comment: comment ?? '',
@@ -104,17 +128,21 @@ export async function rejectById(id: string, reason: string, comment?: string): 
 
     );
   if (!res.ok) throw res.status.toString();
-  return await res.json() as Ad;
+  return await res.json() as moderationAction;
 }
-export async function requestChangesById(id: string, reason: string, comment?: string): Promise<Ad> {
+export async function requestChangesById(id: string, reason: string, comment?: string): Promise<moderationAction> {
   const res = await fetch(`http://localhost:3001/api/v1/ads/${id}/request-changes`,
     {
-      headers: { Accept: "application/json" },
+      method: 'POST',
+      headers: {
+        Accept: "application/json",
+        'Content-Type': "application/json",
+      },
       body: JSON.stringify({
         reason,
         comment: comment ?? '',
       })
     });
   if (!res.ok) throw res.status.toString();
-  return await res.json() as Ad;
+  return await res.json() as moderationAction;
 }

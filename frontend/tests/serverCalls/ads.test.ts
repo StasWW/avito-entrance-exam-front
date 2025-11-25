@@ -1,55 +1,79 @@
-import { getAds } from "../../src/serverCalls/ads"
+import { getAds, approveById, rejectById, requestChangesById } from "../../src/serverCalls/ads"
 
 describe("getAds (integration)", () => {
+  const expectValidResponse = (result: unknown) => {
+    expect(result).toBeDefined()
+    expect(typeof result).toBe("object")
+    expect(Array.isArray(result)).toBe(false)
+  }
 
-  it("fetches ads with basic params", async () => {
+  it("returns ads with basic params", async () => {
     const result = await getAds({
-        page: 1,
-        limit: 10,
-        sortBy: "createdAt",
-        sortOrder: "asc",
+      page: 1,
+      limit: 10,
+      sortBy: "createdAt",
+      sortOrder: "asc",
     })
-
-    expect(typeof result === 'object' && !Array.isArray(result)).toBe(true)
+    expectValidResponse(result)
   })
 
-  it("fetches ads with categoryId", async () => {
+  it("returns ads filtered by categoryId", async () => {
     const result = await getAds({
-        page: 1,
-        limit: 5,
-        sortBy: "price",
-        sortOrder: "desc",
-        categoryId: 2,
+      page: 1,
+      limit: 5,
+      sortBy: "price",
+      sortOrder: "desc",
+      categoryId: 2,
     })
-
-    expect(typeof result === 'object' && !Array.isArray(result)).toBe(true)
+    expectValidResponse(result)
   })
 
-  it("fetches ads with search string", async () => {
+  it("returns ads filtered by search string", async () => {
     const result = await getAds({
-        page: 1,
-        limit: 5,
-        sortBy: "priority",
-        sortOrder: "asc",
-        search: "laptop",
+      page: 1,
+      limit: 5,
+      sortBy: "priority",
+      sortOrder: "asc",
+      search: "laptop",
     })
-
-    expect(typeof result === 'object' && !Array.isArray(result)).toBe(true)
+    expectValidResponse(result)
   })
 
-  it("use all params", async () => {
+  it("returns ads with all params applied", async () => {
     const result = await getAds({
-        page: 2,
-        limit: 10,
-        sortBy: "createdAt",
-        sortOrder: "asc",
-        status: ['pending'],
-        categoryId: 0,
-        minPrice: 0,
-        maxPrice: 2000000,
-        search: 'a',
+      page: 2,
+      limit: 10,
+      sortBy: "createdAt",
+      sortOrder: "asc",
+      status: ["pending"],
+      categoryId: 0,
+      minPrice: 0,
+      maxPrice: 2000000,
+      search: "a",
     })
+    expectValidResponse(result)
+  })
+})
 
-    expect(typeof result === 'object' && !Array.isArray(result)).toBe(true)
+describe("ads actions (integration)", () => {
+  const expectValidAd = (result: unknown) => {
+    expect(result).toBeDefined()
+    expect(typeof result).toBe("object")
+    expect(Array.isArray(result)).toBe(false)
+  }
+
+  it("approves ad by id", async () => {
+    const result = await approveById("123")
+    expectValidAd(result)
+  })
+
+  it("rejects ad by id with reason", async () => {
+    const result = await rejectById("123", "Запрещенный товар", "Неверное описание")
+    expectValidAd(result)
+  })
+
+  it("requests changes for ad by id", async () => {
+    const result = await requestChangesById("123", "Неверная категория", "Уточните категорию")
+    expectValidAd(result)
   })
 })

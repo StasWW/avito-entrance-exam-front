@@ -5,3 +5,6 @@ html, body, #root {
 ::-webkit-scrollbar {
     display: none;
 }
+* {
+    font-family: 'Inter','Segoe UI',sans-serif;
+}

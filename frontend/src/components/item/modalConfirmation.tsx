@@ -7,10 +7,13 @@ interface Props {
   action: "approve" | "reject" | "request-changes";
   id: string;
   display: boolean;
+  onClose: (msg?: string) => void;
+  openNotification: (title: string, text: string) => void;
 }
 
-export default function ConfirmationModal({ action, id, display }: Props) {
-  const [isError, setIsError] = useState(false);
+export default function ConfirmationModal({ action, id, display, onClose, openNotification }: Props) {
+  const [errorText, setErrorText] = useState('');
+  const [successText, setSuccessText] = useState('');
   const [rejectReason, setRejectReason] = useState("");
   const [customReason, setCustomReason] = useState("");
   const [comment, setComment] = useState("");
@@ -19,20 +22,54 @@ export default function ConfirmationModal({ action, id, display }: Props) {
 
   if (!display) return null;
 
-  const handleConfirm = () => {
-    if (action === "approve") {
-      approveAd(id).catch(() => setIsError(true));
-    } else if (action === "reject") {
-      const reason = rejectReason === "Другое" ? customReason : rejectReason;
-      rejectAd(id, reason, comment).catch(() => setIsError(true));
-    } else if (action === "request-changes") {
-      requestChangesAd(id, comment ? "Изменения требуются" : "", comment).catch(() => setIsError(true));
+  const handleErrorResponses = (e: string) => {
+    if (e === '404') setErrorText('Такого объявления не существует!');
+    else if (e === '500') setErrorText('Ошибка сервиса, повторите попытку позже')
+    else setErrorText(`${e}, Что-то не так, обратитесь в поддержку`)
+  }
+
+
+  const handleConfirm = async () => {
+    let success = false;
+
+    try {
+      if (action === "approve") {
+        await approveAd(id);
+        success = true;
+      } else if (action === "reject") {
+        const reason = rejectReason === "Другое" ? customReason : rejectReason;
+        await rejectAd(id, reason, comment);
+        success = true;
+      } else if (action === "request-changes") {
+        await requestChangesAd(id, comment);
+        success = true;
+      }
+    } catch (e: any) {
+      handleErrorResponses(e);
+      success = false;
+    }
+
+    if (success) {
+      setSuccessText('Перенаправляем вас обратно')
+      setTimeout(() => {
+        onClose("success");
+      }, 1000)
     }
   };
+
+  if (successText) openNotification('Успешно', successText);
+
+  const handleCancel = () => {
+    onClose();
+  }
 
   return (
     <div style={styles.container}>
       <div style={styles.content}>
+        <button style={styles.cross} onClick={handleCancel}>
+          &#10005;
+        </button>
+
         {action === "reject" ? (
           <>
             <h1 style={styles.header}>Укажите причину отклонения</h1>
@@ -40,8 +77,9 @@ export default function ConfirmationModal({ action, id, display }: Props) {
               style={styles.select}
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
+              required
             >
-              <option value="">-- выберите причину --</option>
+              <option value="">-- Выберите причину --</option>
               <option value="Запрещенный товар">Запрещенный товар</option>
               <option value="Неверная категория">Неверная категория</option>
               <option value="Товар не соответствует фото">Товар не соответствует фото</option>
@@ -87,7 +125,8 @@ export default function ConfirmationModal({ action, id, display }: Props) {
             </button>
           </>
         )}
-        {isError && <p style={styles.error}>Ошибка при выполнении действия</p>}
+
+        {errorText && <p style={styles.error}>{errorText}</p>}
       </div>
     </div>
   );

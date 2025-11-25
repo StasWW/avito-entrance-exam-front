@@ -10,7 +10,7 @@ export default function AdsPlaceholder() {
   return (
     <div>
       {ads.length > 0 ? (
-        ads.map(ad => <AdComponent key={ad.id} {...ad} />)
+        ads.map(ad => ad ? <AdComponent key={ad.id} {...ad} /> : <></>)
       ) : <ErrorComponent />}
     </div>
   );

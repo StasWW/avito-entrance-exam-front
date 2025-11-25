@@ -10,12 +10,14 @@ import ImageCarousel from "../components/item/imagesCarousel.tsx";
 import ModerationHistory from "../components/item/moderationHistory.tsx";
 import Table from "../components/item/table.tsx";
 import ConfirmationModal from "../components/item/modalConfirmation.tsx";
+import Notification from "../components/notification.tsx";
 
 export default function ItemPage() {
   const [ads] = useAds();
   const [ad, setAd] = useState<Ad | undefined | null>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorCode, setErrorCode] = useState<string>("");
+  const [notificationText, setNotificationText] = useState<{ title: string, text: string } | undefined>(undefined);
   const { id } = useParams();
   const { pagination } = usePagination();
 
@@ -31,7 +33,7 @@ export default function ItemPage() {
     { ru: "Отклонено", value: "rejected", color: isDarkmode ? "#b22222" : "#FF4500" },
   ];
 
-  const currentStatus = statuses.find((s) => s.value === ad?.status);
+  const currentStatus = statuses.find((s) => s.value === ad?.status) ?? statuses[0];
 
   const loadItemById = async (id: string): Promise<Ad> => {
     for (let ad of ads) if (ad.id === Number(id)) return ad;
@@ -41,6 +43,16 @@ export default function ItemPage() {
   const goHome = () => {
     navigate(`/?p=${pagination.currentPage}`);
   };
+
+
+  const handleNextAd = () => {
+    if (pagination.currentPage + 1 > pagination.totalPages) {
+      setNotificationText({title: 'Нельзя!', text: 'Объявления закончились'});
+    }
+  }
+  const handlePrevAd = () => {
+
+  }
 
   useEffect(() => {
     if (!id) return;
@@ -56,7 +68,6 @@ export default function ItemPage() {
       });
   }, []);
 
-  // Modal state
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"approve" | "reject" | "request-changes" | null>(null);
 
@@ -75,7 +86,7 @@ export default function ItemPage() {
                   backgroundColor: currentStatus?.color ?? styles.status.backgroundColor,
                 }}
               >
-                {currentStatus?.ru}
+                {currentStatus.ru}
               </span>
 
               <span
@@ -101,6 +112,8 @@ export default function ItemPage() {
             <h3>Полное описание</h3>
             <Table table={ad.characteristics} />
             <div style={styles.seller.info}>
+              <p>{ad.description}</p>
+              <h3>О продавце</h3>
               <p>
                 Продавец: {ad.seller.name} | {ad.seller.rating}{" "}
                 <span style={{ color: "yellow" }}>&#9733;</span>
@@ -142,7 +155,17 @@ export default function ItemPage() {
           </section>
 
           {modalAction && (
-            <ConfirmationModal action={modalAction} id={String(ad.id)} display={showModal} />
+            <ConfirmationModal
+              action={modalAction}
+              id={String(ad.id)}
+              display={showModal}
+              onClose={(msg) => {
+                setShowModal(false)
+                if (msg === 'success') {
+                  goHome();
+              }}}
+              openNotification={(title, text) => setNotificationText({title, text})}
+            />
           )}
 
           <nav style={styles.nav.section}>
@@ -150,10 +173,17 @@ export default function ItemPage() {
               ← К списку
             </a>
             <span>
-              <a style={styles.nav.link}>← Пред.</a> |{" "}
-              <a style={styles.nav.link}>След. →</a>
+              <a
+                style={styles.nav.link}
+                onClick={handlePrevAd}
+              >← Пред.</a> |{" "}
+              <a
+                style={styles.nav.link}
+                onClick={handleNextAd}
+              >След. →</a>
             </span>
           </nav>
+        { notificationText && <Notification title={notificationText.title} text={notificationText.text} /> }
         </div>
       ) : (
         <ErrorComponent

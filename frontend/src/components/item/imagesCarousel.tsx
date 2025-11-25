@@ -20,7 +20,7 @@ export default function ImageCarousel({ images }: Props) {
         } )}
 
       </div>
-      <img src={images[index]} alt="ad image" style={styles.image} />
+      <img src={images[index]} alt="ad image" style={styles.image} key={index} />
       <button onClick={prevImage} style={styles.buttonLeft} />
       <button onClick={nextImage} style={styles.buttonRight} />
     </div>

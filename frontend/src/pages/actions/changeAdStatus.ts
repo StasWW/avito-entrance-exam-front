@@ -9,40 +9,32 @@ const saveNewAd = (ad: Ad)=> {
     ad
   ]));
 }
-export function rejectAd (id: string, reason: string, comment?: string): Promise<boolean> {
-  return rejectById(id, reason, comment)
-    .then(
-      (ad) => {
-        saveNewAd(ad);
-        return true;
-      }
-    )
-    .catch(() => {
-      return false;
-    })
+export async function approveAd(id: string): Promise<boolean> {
+  try {
+    const ad = await approveById(id);
+    saveNewAd(ad.ad);
+    return true;
+  } catch (e: any) {
+    throw e;
+  }
+}
 
+export async function rejectAd(id: string, reason: string, comment?: string): Promise<boolean> {
+  try {
+    const ad = await rejectById(id, reason, comment);
+    saveNewAd(ad.ad);
+    return true;
+  } catch (e: any) {
+    throw e;
+  }
 }
-export async function approveAd (id: string): Promise<boolean> {
-  return approveById(id)
-    .then(
-      (ad) => {
-        saveNewAd(ad);
-        return true;
-      }
-    )
-    .catch(() => {
-      return false;
-    })
-}
-export async function requestChangesAd (id: string, reason: string, comment?: string): Promise<boolean> {
-  return requestChangesById(id, reason, comment)
-    .then(
-      (ad) => {
-        saveNewAd(ad);
-        return true;
-      }
-    )
-    .catch(() => {
-      return false;
-    })
+
+export async function requestChangesAd(id: string, reason: string, comment?: string): Promise<boolean> {
+  try {
+    const ad = await requestChangesById(id, reason, comment);
+    saveNewAd(ad.ad);
+    return true;
+  } catch (e: any) {
+    throw e;
+  }
 }

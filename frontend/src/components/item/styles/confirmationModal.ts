@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 
 export interface ConfirmationModalStyles {
+  cross: CSSProperties;
   container: CSSProperties;
   content: CSSProperties;
   header: CSSProperties;
@@ -16,7 +17,25 @@ export default function getConfirmationModalStyles(isDarkmode: boolean): Confirm
   const borderColor = isDarkmode ? "#555" : "#ccc";
 
   return {
+    cross: {
+      position: "absolute",
+      top: 10,
+      right: 10,
+      width: 40,
+      height: 40,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: bg,
+      color: baseText,
+      borderRadius: "50%",
+      fontSize: "1.2rem",
+      fontWeight: 700,
+      cursor: "pointer",
+      transition: "background-color 0.3s ease, transform 0.2s ease",
+    },
     container: {
+      boxSizing: 'border-box',
       position: "fixed",
       top: 0,
       left: 0,
@@ -26,7 +45,7 @@ export default function getConfirmationModalStyles(isDarkmode: boolean): Confirm
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      zIndex: 1000,
+      zIndex: 10,
     },
     content: {
       width: "90%",
@@ -47,7 +66,6 @@ export default function getConfirmationModalStyles(isDarkmode: boolean): Confirm
       marginTop: "1rem",
       padding: "0.75rem 1.25rem",
       borderRadius: "4px",
-      border: "none",
       cursor: "pointer",
       backgroundColor: isDarkmode ? "#2e8b57" : "#32CD32",
       color: "#fff",
@@ -70,9 +88,10 @@ export default function getConfirmationModalStyles(isDarkmode: boolean): Confirm
       transition: "border-color 0.3s ease, background-color 0.3s ease",
     },
     input: {
+      boxSizing: 'border-box',
       width: "100%",
       height: "40px",
-      padding: "0 0.5rem",
+      padding: "0.5rem 0.5rem",
       marginTop: "0.5rem",
       borderRadius: "4px",
       border: `1px solid ${borderColor}`,
