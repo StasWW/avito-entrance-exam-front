@@ -50,7 +50,7 @@ export default function ConfirmationModal({ action, id, display, onClose, openNo
     }
 
     if (success) {
-      setSuccessText('Перенаправляем вас обратно')
+      setSuccessText('Перенаправляем вас дальше')
       setTimeout(() => {
         onClose("success");
       }, 1000)

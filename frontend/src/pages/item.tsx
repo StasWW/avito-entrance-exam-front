@@ -79,6 +79,49 @@ export default function ItemPage() {
     }
   };
 
+  // горячие клавиши: A, D, ←, →
+  useEffect(() => {
+    const onKeyUp = (e: KeyboardEvent) => {
+      // игнорируем ввод в полях (input/textarea/contentEditable)
+      const target = e.target as HTMLElement | null;
+      const isTyping =
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          (target as any).isContentEditable);
+      if (isTyping) return;
+
+      switch (e.key) {
+        case "a":
+        case "A": {
+          setModalAction("approve");
+          setShowModal(true);
+          break;
+        }
+        case "d":
+        case "D": {
+          setModalAction("reject");
+          setShowModal(true);
+          break;
+        }
+        case "ArrowRight": {
+          handleNextAd();
+          break;
+        }
+        case "ArrowLeft": {
+          handlePrevAd();
+          break;
+        }
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener("keyup", onKeyUp);
+    return () => window.removeEventListener("keyup", onKeyUp);
+  }, [handleNextAd, handlePrevAd]);
+
+
   useEffect(() => {
     if (!id) return;
     loadItemById(id)
@@ -110,7 +153,7 @@ export default function ItemPage() {
               action={modalAction}
               id={String(ad.id)}
               display={showModal}
-              onClose={(msg) => { setShowModal(false); if (msg === "success") goHome(); }}
+              onClose={(msg) => { setShowModal(false); if (msg === "success") handleNextAd(); }}
               openNotification={(title, text) => setNotificationText({ title, text })}
             />
           )}
