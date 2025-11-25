@@ -9,8 +9,8 @@ import paginationSlice, {
   resetPagination, type PaginationState
 } from "./paginationSlice.ts";
 import { useDispatch, useSelector } from "react-redux";
-import adsSlice, {replaceAds} from "./adsSlice.ts";
-import type {Ad} from "../serverCalls/ads.ts";
+import adsSlice, { replaceAds, replaceIds } from "./adsSlice.ts";
+import type { Ad } from "../serverCalls/ads.ts";
 
 export const store = configureStore({
   reducer: {
@@ -25,9 +25,6 @@ export type AppDispatch = typeof store.dispatch;
 
 // STORAGE ACTIONS ABSTRACTIONS
 
-/**
- * Returns isDarkmode and toggle func
- */
 export const useDarkmode = (): [boolean, () => void] => {
   const dispatch = useDispatch();
   const isDarkMode = useSelector((state: RootState) => state.darkmode.isDarkMode);
@@ -39,9 +36,6 @@ export const useDarkmode = (): [boolean, () => void] => {
   return [isDarkMode, toggle];
 };
 
-/**
- * Returns pagination state and action dispatchers
- */
 export const usePagination = () => {
   const dispatch = useDispatch();
   const pagination = useSelector((state: RootState) => state.pagination);
@@ -56,16 +50,33 @@ export const usePagination = () => {
     resetPagination: () => dispatch(resetPagination()),
   };
 };
-/**
- * Returns ads state and replaceAds dispatcher
- */
+
 export const useAds = (): [Ad[], (ads: Ad[]) => void] => {
   const dispatch = useDispatch();
   const ads = useSelector((state: RootState) => state.ads.ads);
 
   const replace = (newAds: Ad[]) => {
     dispatch(replaceAds(newAds));
+    const ids = newAds.map(ad => ad.id);
+    dispatch(replaceIds(ids));
+    localStorage.setItem("adIds", JSON.stringify(ids));
   };
 
   return [ads, replace];
+};
+
+export const useAdIds = (): number[] => {
+  let ids = useSelector((state: RootState) => state.ads.ids);
+
+  //retrieve from localStorage if redux is empty
+  if (!ids || ids.length === 0) {
+    const stored = localStorage.getItem("adIds");
+    if (stored) {
+      try {
+        ids = JSON.parse(stored);
+      } catch {}
+    }
+  }
+
+  return ids;
 };

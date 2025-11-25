@@ -1,6 +1,6 @@
 import { getAds } from "../../serverCalls/ads.ts";
 import { store } from "../../store/storage.ts";
-import { replaceAds } from "../../store/adsSlice.ts";
+import { replaceAds, replaceIds } from "../../store/adsSlice.ts";
 import { setPagination } from "../../store/paginationSlice.ts";
 
 interface LoadAdsParams {
@@ -12,12 +12,31 @@ interface LoadAdsParams {
   maxPrice?: number;
   search?: string;
   currentPage?: number;
+  limit?: number;
+}
+
+export function saveSearchParams(params: LoadAdsParams) {
+  localStorage.setItem("searchParams", JSON.stringify(params));
+}
+
+export function getSavedSearchParams(): LoadAdsParams | null {
+  const stored = localStorage.getItem("searchParams");
+  if (stored) {
+    try {
+      return JSON.parse(stored) as LoadAdsParams;
+    } catch {
+      return null;
+    }
+  }
+  return null;
 }
 
 export default async function loadAds(params: LoadAdsParams) {
+  saveSearchParams(params);
+
   const query: any = {
     page: params.currentPage ?? 1,
-    limit: 10,
+    limit: params.limit ?? 10,
     sortBy: params.sortBy ?? "createdAt",
     sortOrder: params.sortOrder ?? "asc",
     ...(params.status ? { status: params.status } : {}),
@@ -26,6 +45,7 @@ export default async function loadAds(params: LoadAdsParams) {
     ...(params.maxPrice !== undefined ? { maxPrice: params.maxPrice } : {}),
     ...(params.search ? { search: params.search } : {}),
   };
+
   const response = await getAds(query);
 
   const currentAds = store.getState().ads.ads;
@@ -37,10 +57,17 @@ export default async function loadAds(params: LoadAdsParams) {
 
   const paginationChanged =
     currentPagination.totalPages !== response.pagination.totalPages ||
-    currentPagination.totalItems !== response.pagination.totalItems
+    currentPagination.totalItems !== response.pagination.totalItems;
 
   if (adsChanged) {
     store.dispatch(replaceAds(response.ads));
+    const allQuery: any = {
+      ...query,
+      page: 1,
+      limit: response.pagination.totalItems,
+    };
+    const allResponse = await getAds(allQuery);
+    store.dispatch(replaceIds(allResponse.ads.map(ad => ad.id)));
   }
   if (paginationChanged) {
     store.dispatch(setPagination(response.pagination));

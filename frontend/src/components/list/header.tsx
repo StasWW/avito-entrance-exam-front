@@ -3,10 +3,13 @@ import {useDarkmode} from "../../store/storage.ts";
 import darkModeIcon from "../../../public/darkmodeIcon.png";
 import lightModeIcon from "../../../public/lightmodeIcon.png";
 import getHeaderStyle from "./styles/header.ts";
+import {useNavigate} from "react-router-dom";
+import defaultPfp from "../../../public/defaultPfp.jpg";
 
 export default function Header() {
   const [isDarkmode, toggleDarkmode] = useDarkmode();
   const styles = useMemo(() => getHeaderStyle(isDarkmode), [isDarkmode]);
+  const navigate = useNavigate();
 
   return (
     <header style={styles.container}>
@@ -31,6 +34,12 @@ export default function Header() {
           />
         </span>
       </label>
+      <button
+        onClick={() => navigate('/stats')}
+        style={styles.button}
+      >
+        <img src={defaultPfp} alt='Pfp' style={styles.pfp} />
+      </button>
     </header>
   );
 }

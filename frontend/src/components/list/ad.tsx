@@ -24,7 +24,7 @@ export default function AdComponent(props: Ad) {
   const redirectToItemPage = () => {
     navigate(`/item/${props.id}`);
   }
-  console.log(props)
+
   return (
     <div style={styles.card}>
       <div>

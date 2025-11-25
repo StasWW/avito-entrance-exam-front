@@ -9,6 +9,8 @@ interface headerStyles {
   round: CSSProperties;
   iconLeft: CSSProperties;
   iconRight: CSSProperties;
+  pfp: CSSProperties;
+  button: CSSProperties;
 }
 
 export default function getHeaderStyle(isDarkmode: boolean): headerStyles {
@@ -77,5 +79,15 @@ export default function getHeaderStyle(isDarkmode: boolean): headerStyles {
       pointerEvents: "none",
       zIndex: 1,
     },
+    pfp: {
+      width: 35,
+      height: 35,
+      borderRadius: 40,
+      cursor: 'pointer',
+    },
+    button: {
+      backgroundColor: 'inherit',
+      border: 'none',
+    }
   };
 }

@@ -50,7 +50,7 @@ export default function getItemStyle(isDarkmode: boolean): ItemPageStyles {
       height: "100vh",
       backgroundColor: baseBg,
       padding: 20,
-      overflow: "hidden",
+      overflow: "auto",
       msOverflowStyle: "none",
       scrollbarWidth: "none",
     },

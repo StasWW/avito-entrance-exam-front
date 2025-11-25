@@ -2,7 +2,7 @@ import React, {type ChangeEvent, useEffect, useMemo, useRef, useState} from "rea
 import filtersGetStyle from "./styles/filters.ts";
 import {useDarkmode, usePagination} from "../../store/storage.ts";
 import searchIcon from "../../../public/searchIcon.png";
-import loadAds from "../../pages/actions/loadAds.ts";
+import loadAds, {getSavedSearchParams} from "../../pages/actions/loadAds.ts";
 import {setCurrentPage} from "../../store/paginationSlice.ts";
 
 type categoryType = "Электроника" | "Недвижимость" | "Транспорт" | "Работа" | "Услуги" | "Животные" | "Мода" | "Детское"
@@ -20,14 +20,7 @@ export default function Filters() {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [selectedCategory, setSelectedCategory] = useState<categoryType | undefined>(undefined);
-  const [selectedStatuses, setSelectedStatuses] = useState<statusType[]>([]);
-  const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
-  const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [sortBy, setSortBy] = useState<"createdAt" | "price" | "priority">("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-
+  const saved = getSavedSearchParams() || {};
   const categories = [
     "Электроника",
     "Недвижимость",
@@ -38,6 +31,18 @@ export default function Filters() {
     "Мода",
     "Детское",
   ];
+
+  const [selectedCategory, setSelectedCategory] = useState<categoryType | undefined>(
+    saved.categorySelected !== undefined ? categories[saved.categorySelected] as categoryType : undefined
+  );
+  // @ts-ignore сохраненный статус всегда типа статус
+  const [selectedStatuses, setSelectedStatuses] = useState<statusType[]>(saved.status ?? []);
+  const [minPrice, setMinPrice] = useState<number | undefined>(saved.minPrice);
+  const [maxPrice, setMaxPrice] = useState<number | undefined>(saved.maxPrice);
+  const [searchQuery, setSearchQuery] = useState<string>(saved.search ?? "");
+  const [sortBy, setSortBy] = useState<"createdAt" | "price" | "priority">(saved.sortBy ?? "createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(saved.sortOrder ?? "asc");
+
 
   const statuses = [
     { label: "Модерация", value: "requestChanges", color: isDarkmode ? "#b59f00" : "#FFD700" },

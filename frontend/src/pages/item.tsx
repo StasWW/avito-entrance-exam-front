@@ -1,28 +1,29 @@
-import { useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import type { Ad } from "../serverCalls/ads.ts";
-import { useAds, useDarkmode, usePagination } from "../store/storage.ts";
+import { useAds, useAdIds, useDarkmode, usePagination } from "../store/storage.ts";
 import { getAdById } from "../serverCalls/ads.ts";
 import ErrorComponent from "../components/errorComponent.tsx";
 import getItemStyle from "./styles/item.ts";
-import { timeToText } from "./actions/adStringsFormatters.ts";
-import ImageCarousel from "../components/item/imagesCarousel.tsx";
-import ModerationHistory from "../components/item/moderationHistory.tsx";
-import Table from "../components/item/table.tsx";
 import ConfirmationModal from "../components/item/modalConfirmation.tsx";
 import Notification from "../components/notification.tsx";
 
+import ItemHeader from "../components/item/ItemHeader.tsx";
+import ItemHistory from "../components/item/ItemHistory.tsx";
+import ItemDescription from "../components/item/ItemDescription.tsx";
+import ItemActions from "../components/item/ItemActions.tsx";
+import ItemNav from "../components/item/ItemNav.tsx";
+
 export default function ItemPage() {
   const [ads] = useAds();
+  const ids = useAdIds();
   const [ad, setAd] = useState<Ad | undefined | null>(undefined);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [errorCode, setErrorCode] = useState<string>("");
-  const [notificationText, setNotificationText] = useState<{ title: string, text: string } | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorCode, setErrorCode] = useState("");
+  const [notificationText, setNotificationText] = useState<{ title: string; text: string } | undefined>(undefined);
   const { id } = useParams();
-  const { pagination } = usePagination();
-
+  const { pagination, setCurrentPage } = usePagination();
   const navigate = useNavigate();
-
   const [isDarkmode] = useDarkmode();
   const styles = useMemo(() => getItemStyle(isDarkmode), [isDarkmode]);
 
@@ -32,41 +33,59 @@ export default function ItemPage() {
     { ru: "Одобрено", value: "approved", color: isDarkmode ? "#2e8b57" : "#32CD32" },
     { ru: "Отклонено", value: "rejected", color: isDarkmode ? "#b22222" : "#FF4500" },
   ];
-
   const currentStatus = statuses.find((s) => s.value === ad?.status) ?? statuses[0];
 
   const loadItemById = async (id: string): Promise<Ad> => {
-    for (let ad of ads) if (ad.id === Number(id)) return ad;
+    const found = ads.find((a) => a.id === Number(id));
+    if (found) return found;
     return await getAdById(id);
   };
 
-  const goHome = () => {
-    navigate(`/?p=${pagination.currentPage}`);
+  const goHome = () => navigate(`/?p=${pagination.currentPage}`);
+
+  const goToAd = (adId: number) => {
+    navigate(`/item/${adId}`);
   };
 
-
   const handleNextAd = () => {
-    if (pagination.currentPage + 1 > pagination.totalPages) {
-      setNotificationText({title: 'Нельзя!', text: 'Объявления закончились'});
+    if (!ad) return;
+    const currentIndex = ids.findIndex((adId) => adId === ad.id);
+    if (currentIndex !== -1 && currentIndex < ids.length - 1) {
+      const nextId = ids[currentIndex + 1];
+      goToAd(nextId);
+    } else {
+      if (pagination.currentPage < pagination.totalPages) {
+        setCurrentPage(pagination.currentPage + 1);
+        navigate(`/?p=${pagination.currentPage + 1}`);
+      } else {
+        setNotificationText({ title: "Нельзя!", text: "Объявления закончились" });
+      }
     }
-  }
-  const handlePrevAd = () => {
+  };
 
-  }
+  const handlePrevAd = () => {
+    if (!ad) return;
+    const currentIndex = ids.findIndex((adId) => adId === ad.id);
+    if (currentIndex > 0) {
+      const prevId = ids[currentIndex - 1];
+      goToAd(prevId);
+    } else {
+      if (pagination.currentPage > 1) {
+        setCurrentPage(pagination.currentPage - 1);
+        navigate(`/?p=${pagination.currentPage - 1}`);
+      } else {
+        setNotificationText({ title: "Нельзя!", text: "Это первая страница" });
+      }
+    }
+  };
 
   useEffect(() => {
     if (!id) return;
     loadItemById(id)
-      .then((result) => {
-        setAd(result);
-      })
-      .catch((e) => {
-        setErrorCode(e);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
+      .then(setAd)
+      .catch(setErrorCode)
+      .finally(() => setIsLoading(false));
+  }, [id, ads]);
 
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"approve" | "reject" | "request-changes" | null>(null);
@@ -77,113 +96,28 @@ export default function ItemPage() {
         <h1>loading...</h1>
       ) : ad ? (
         <div style={styles.container}>
-          <div className="header" style={styles.headerBox}>
-            <h1 style={styles.title}>{ad.title}</h1>
-            <div style={styles.labelBox}>
-              <span
-                style={{
-                  ...styles.status,
-                  backgroundColor: currentStatus?.color ?? styles.status.backgroundColor,
-                }}
-              >
-                {currentStatus.ru}
-              </span>
-
-              <span
-                style={{
-                  display: ad.priority === "urgent" ? "inline" : "none",
-                  ...styles.urgency,
-                }}
-              >
-                Срочно
-              </span>
-            </div>
-          </div>
-
-          <section style={styles.history.section}>
-            <ImageCarousel images={ad.images} />
-            <div style={{ width: "100%" }}>
-              <h3 style={{ margin: 0 }}>История модерации</h3>
-              <ModerationHistory history={ad.moderationHistory} />
-            </div>
-          </section>
-
-          <section style={styles.description}>
-            <h3>Полное описание</h3>
-            <Table table={ad.characteristics} />
-            <div style={styles.seller.info}>
-              <p>{ad.description}</p>
-              <h3>О продавце</h3>
-              <p>
-                Продавец: {ad.seller.name} | {ad.seller.rating}{" "}
-                <span style={{ color: "yellow" }}>&#9733;</span>
-              </p>
-              <p>
-                {ad.seller.totalAds} объявлений | На сайте: {timeToText(ad.seller.registeredAt)}
-              </p>
-            </div>
-          </section>
-
-          <section style={styles.actions.section}>
-            <button
-              style={{ ...styles.actions.button, ...styles.actions.approve }}
-              onClick={() => {
-                setModalAction("approve");
-                setShowModal(true);
-              }}
-            >
-              &#10003; Одобрить
-            </button>
-            <button
-              style={{ ...styles.actions.button, ...styles.actions.reject }}
-              onClick={() => {
-                setModalAction("reject");
-                setShowModal(true);
-              }}
-            >
-              &#10005; Отклонить
-            </button>
-            <button
-              style={{ ...styles.actions.button, ...styles.actions.reject }}
-              onClick={() => {
-                setModalAction("request-changes");
-                setShowModal(true);
-              }}
-            >
-              &#8635; Доработка
-            </button>
-          </section>
-
+          <ItemHeader ad={ad} styles={styles} currentStatus={currentStatus} />
+          <ItemHistory ad={ad} styles={styles} />
+          <ItemDescription ad={ad} styles={styles} />
+          <ItemActions
+            styles={styles}
+            onApprove={() => { setModalAction("approve"); setShowModal(true); }}
+            onReject={() => { setModalAction("reject"); setShowModal(true); }}
+            onRequestChanges={() => { setModalAction("request-changes"); setShowModal(true); }}
+          />
           {modalAction && (
             <ConfirmationModal
               action={modalAction}
               id={String(ad.id)}
               display={showModal}
-              onClose={(msg) => {
-                setShowModal(false)
-                if (msg === 'success') {
-                  goHome();
-              }}}
-              openNotification={(title, text) => setNotificationText({title, text})}
+              onClose={(msg) => { setShowModal(false); if (msg === "success") goHome(); }}
+              openNotification={(title, text) => setNotificationText({ title, text })}
             />
           )}
-
-          <nav style={styles.nav.section}>
-            <a style={styles.nav.link} onClick={goHome}>
-              ← К списку
-            </a>
-            <span>
-              <a
-                style={styles.nav.link}
-                onClick={handlePrevAd}
-              >← Пред.</a> |{" "}
-              <a
-                style={styles.nav.link}
-                onClick={handleNextAd}
-              >След. →</a>
-            </span>
-          </nav>
-        { notificationText && <Notification title={notificationText.title} text={notificationText.text} /> }
+          <ItemNav styles={styles} goHome={goHome} handlePrevAd={handlePrevAd} handleNextAd={handleNextAd} />
+          {notificationText && <Notification title={notificationText.title} text={notificationText.text} onClose={() => {
+            setNotificationText(undefined)
+          }} />}
         </div>
       ) : (
         <ErrorComponent

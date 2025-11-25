@@ -2,9 +2,27 @@ html, body, #root {
     margin: 0;
     padding: 0;
 }
-::-webkit-scrollbar {
-    display: none;
-}
 * {
     font-family: 'Inter','Segoe UI',sans-serif;
+}
+
+.scroll-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+    background: #222;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 4px;
+}
+
+.light .scroll-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.light .scroll-container::-webkit-scrollbar-thumb {
+    background-color: #ccc;
 }
